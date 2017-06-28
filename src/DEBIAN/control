@@ -1,0 +1,12 @@
+Package: cacti-plugin-realtime
+Version: 0.5-3
+Architecture: all
+Maintainer: Paul Weaver <paul.weaver.uk@gmail.com>
+Depends: cacti
+Conflicts:
+Recommends:
+Section: web
+Priority: optional
+Installed-Size: 1000
+Description: Realtime cacti plugin
+ Package for a realtime cacti plugin for realtime from http://docs.cacti.net/plugin:realtime
