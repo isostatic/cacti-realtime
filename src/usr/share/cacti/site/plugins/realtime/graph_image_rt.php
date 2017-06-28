@@ -249,7 +249,7 @@ function rrdtool_function_graph_rt($local_graph_id, $graph_data_array) {
 		}
 	}
 
-	if (ereg("^[0-9]+$", $graph["unit_exponent_value"])) {
+	if (preg_match("/^[0-9]+$/", $graph["unit_exponent_value"])) {
 		$unit_exponent_value = "--units-exponent=" . $graph["unit_exponent_value"] . RRD_NL;
 	}
 
@@ -575,7 +575,7 @@ function rrdtool_function_graph_rt($local_graph_id, $graph_data_array) {
 				If you have any additions to this small peice of code, feel free to send them to me. */
 				if ($graph["auto_padding"] == "on") {
 					/* only applies to AREA, STACK and LINEs */
-					if (ereg("(AREA|STACK|LINE[123])", $graph_item_types{$graph_item["graph_type_id"]})) {
+					if (preg_match("/(AREA|STACK|LINE[123])/", $graph_item_types{$graph_item["graph_type_id"]})) {
 						$text_format_length = strlen($graph_variables["text_format"][$graph_item_id]);
 
 						if ($text_format_length > $greatest_text_format) {
@@ -637,32 +637,32 @@ function rrdtool_function_graph_rt($local_graph_id, $graph_data_array) {
 			$count_similar_ds_nodups = 0;
 
 			/* if any of those magic variables are requested ... */
-			if (ereg("(ALL_DATA_SOURCES_(NO)?DUPS|SIMILAR_DATA_SOURCES_(NO)?DUPS)", $cdef_string) ||
-				ereg("(COUNT_ALL_DS_(NO)?DUPS|COUNT_SIMILAR_DS_(NO)?DUPS)", $cdef_string)) {
+			if (preg_match("/(ALL_DATA_SOURCES_(NO)?DUPS|SIMILAR_DATA_SOURCES_(NO)?DUPS)/", $cdef_string) ||
+				preg_match("/(COUNT_ALL_DS_(NO)?DUPS|COUNT_SIMILAR_DS_(NO)?DUPS)/", $cdef_string)) {
 
 				/* now walk through each case to initialize array*/
-				if (ereg("ALL_DATA_SOURCES_DUPS", $cdef_string)) {
+				if (preg_match("/ALL_DATA_SOURCES_DUPS/", $cdef_string)) {
 					$magic_item["ALL_DATA_SOURCES_DUPS"] = "";
 				}
-				if (ereg("ALL_DATA_SOURCES_NODUPS", $cdef_string)) {
+				if (preg_match("/ALL_DATA_SOURCES_NODUPS/", $cdef_string)) {
 					$magic_item["ALL_DATA_SOURCES_NODUPS"] = "";
 				}
-				if (ereg("SIMILAR_DATA_SOURCES_DUPS", $cdef_string)) {
+				if (preg_match("/SIMILAR_DATA_SOURCES_DUPS/", $cdef_string)) {
 					$magic_item["SIMILAR_DATA_SOURCES_DUPS"] = "";
 				}
-				if (ereg("SIMILAR_DATA_SOURCES_NODUPS", $cdef_string)) {
+				if (preg_match("/SIMILAR_DATA_SOURCES_NODUPS/", $cdef_string)) {
 					$magic_item["SIMILAR_DATA_SOURCES_NODUPS"] = "";
 				}
-				if (ereg("COUNT_ALL_DS_DUPS", $cdef_string)) {
+				if (preg_match("/COUNT_ALL_DS_DUPS/", $cdef_string)) {
 					$magic_item["COUNT_ALL_DS_DUPS"] = "";
 				}
-				if (ereg("COUNT_ALL_DS_NODUPS", $cdef_string)) {
+				if (preg_match("/COUNT_ALL_DS_NODUPS/", $cdef_string)) {
 					$magic_item["COUNT_ALL_DS_NODUPS"] = "";
 				}
-				if (ereg("COUNT_SIMILAR_DS_DUPS", $cdef_string)) {
+				if (preg_match("/COUNT_SIMILAR_DS_DUPS/", $cdef_string)) {
 					$magic_item["COUNT_SIMILAR_DS_DUPS"] = "";
 				}
-				if (ereg("COUNT_SIMILAR_DS_NODUPS", $cdef_string)) {
+				if (preg_match("/COUNT_SIMILAR_DS_NODUPS/", $cdef_string)) {
 					$magic_item["COUNT_SIMILAR_DS_NODUPS"] = "";
 				}
 
@@ -670,7 +670,7 @@ function rrdtool_function_graph_rt($local_graph_id, $graph_data_array) {
 				for ($t=0;($t<count($graph_items));$t++) {
 
 					/* only work on graph items, omit GRPINTs, COMMENTs and stuff */
-					if ((ereg("(AREA|STACK|LINE[123])", $graph_item_types{$graph_items[$t]["graph_type_id"]})) && (!empty($graph_items[$t]["data_template_rrd_id"]))) {
+					if ((preg_match("/(AREA|STACK|LINE[123])/", $graph_item_types{$graph_items[$t]["graph_type_id"]})) && (!empty($graph_items[$t]["data_template_rrd_id"]))) {
 						/* if the user screws up CF settings, PHP will generate warnings if left unchecked */
 
 						/* matching consolidation function? */
@@ -818,7 +818,7 @@ function rrdtool_function_graph_rt($local_graph_id, $graph_data_array) {
 		text format stuff. */
 		if ((!isset($graph_data_array["graph_nolegend"])) && ($graph["auto_padding"] == "on")) {
 			/* only applies to AREA, STACK and LINEs */
-			if (ereg("(AREA|STACK|LINE[123])", $graph_item_types{$graph_item["graph_type_id"]})) {
+			if (preg_match("/(AREA|STACK|LINE[123])/", $graph_item_types{$graph_item["graph_type_id"]})) {
 				$text_format_length = strlen($graph_variables["text_format"][$graph_item_id]);
 
 				/* we are basing how much to pad on area and stack text format,
@@ -885,7 +885,7 @@ function rrdtool_function_graph_rt($local_graph_id, $graph_data_array) {
 		}elseif (($graph_item_types{$graph_item["graph_type_id"]} == "GPRINT") && (!isset($graph_data_array["graph_nolegend"]))) {
 			$graph_variables["text_format"][$graph_item_id] = str_replace(":", "\:", $graph_variables["text_format"][$graph_item_id]); /* escape colons */
 			$txt_graph_items .= $graph_item_types{$graph_item["graph_type_id"]} . ":" . $data_source_name . ":" . $consolidation_functions{$graph_item["consolidation_function_id"]} . ":\"$text_padding" . $graph_variables["text_format"][$graph_item_id] . $graph_item["gprint_text"] . $hardreturn[$graph_item_id] . "\" ";
-		}elseif (ereg("^(AREA|LINE[123]|STACK|HRULE|VRULE)$", $graph_item_types{$graph_item["graph_type_id"]})) {
+		}elseif (preg_match("/^(AREA|LINE[123]|STACK|HRULE|VRULE)$/", $graph_item_types{$graph_item["graph_type_id"]})) {
 
 			/* initialize any color syntax for graph item */
 			if (empty($graph_item["hex"])) {
@@ -897,7 +897,7 @@ function rrdtool_function_graph_rt($local_graph_id, $graph_data_array) {
 				}
 			}
 
-			if (ereg("^(AREA|LINE[123])$", $graph_item_types{$graph_item["graph_type_id"]})) {
+			if (preg_match("/^(AREA|LINE[123])$/", $graph_item_types{$graph_item["graph_type_id"]})) {
 				$graph_item_stack_type = $graph_item_types{$graph_item["graph_type_id"]};
 				$graph_variables["text_format"][$graph_item_id] = str_replace(":", "\:", $graph_variables["text_format"][$graph_item_id]); /* escape colons */
 				$txt_graph_items .= $graph_item_types{$graph_item["graph_type_id"]} . ":" . $data_source_name . $graph_item_color_code . ":" . "\"" . $graph_variables["text_format"][$graph_item_id] . $hardreturn[$graph_item_id] . "\" ";

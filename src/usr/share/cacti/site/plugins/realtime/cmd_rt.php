@@ -62,7 +62,7 @@ if ($interval <= 0) {
 }
 
 /* record the start time */
-list($micro,$seconds) = split(" ", microtime());
+list($micro,$seconds) = explode(" ", microtime());
 $start = $seconds + $micro;
 
 /* initialize the polling items */
